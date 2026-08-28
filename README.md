@@ -60,5 +60,6 @@ Instalación
 
 Para ejecutar el proyecto localmente:
 
-```bash
 git clone https://github.com/fmoralesa6-lgtm/TAREAIITIENDAENLINEA.git
+
+https://tarea2-tienda-flmorales.netlify.app/
