@@ -1,16 +1,64 @@
-# React + Vite
+NovaTech Store - Tarea 2
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Proyecto desarrollado como parte del curso de Desarrollo Web.
 
-Currently, two official plugins are available:
+Descripción
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+NovaTech Store es una tienda en línea desarrollada utilizando React y Vite.  
+El proyecto incluye navegación entre diferentes páginas mediante React Router y utiliza React-Bootstrap para crear una interfaz moderna, responsiva y organizada.
 
-## React Compiler
+Tecnologías utilizadas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React
+- Vite
+- React Router
+- React-Bootstrap
+- Bootstrap
+- CSS
+- JavaScript
 
-## Expanding the ESLint configuration
+Secciones del proyecto
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+El sitio cuenta con las siguientes páginas:
+
+- Inicio
+- Computadoras
+- Teléfonos
+- Accesorios
+- Ofertas
+- Nosotros
+
+Componentes utilizados
+
+El proyecto utiliza diferentes componentes reutilizables, entre ellos:
+
+- Navbar
+- Footer
+- Carousel
+- Cards
+- Badges
+- Modal
+- Buttons
+- Containers
+- Rows
+- Columns
+
+Funcionalidades
+
+- Navegación entre páginas mediante React Router.
+- Diseño responsivo.
+- Carrusel principal en la página de inicio.
+- Tarjetas para mostrar productos.
+- Uso de badges para destacar productos.
+- Ventana Modal para mostrar información adicional.
+- Botones interactivos.
+- Navegación hacia las diferentes categorías de productos.
+- Diseño personalizado mediante CSS.
+- Componentes reutilizables.
+
+Instalación
+
+Para ejecutar el proyecto localmente:
+
+```bash
+git clone https://github.com/fmoralesa6-lgtm/TAREAIITIENDAENLINEA.git
