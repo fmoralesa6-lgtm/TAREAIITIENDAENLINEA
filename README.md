@@ -1,65 +1,120 @@
-NovaTech Store - Tarea 2
+# Tarea 3 - NovaTech Store
 
-Proyecto desarrollado como parte del curso de Desarrollo Web.
+Este proyecto corresponde a la mejora de la tienda en línea desarrollada
+previamente en React. En esta entrega se implementó una arquitectura de
+gestión de estado global para controlar la autenticación y la información
+del usuario dentro de toda la aplicación.
 
-Descripción
+## Arquitectura seleccionada
 
-NovaTech Store es una tienda en línea desarrollada utilizando React y Vite.  
-El proyecto incluye navegación entre diferentes páginas mediante React Router y utiliza React-Bootstrap para crear una interfaz moderna, responsiva y organizada.
+### Opción A: Context API + useReducer
 
-Tecnologías utilizadas
+Para esta tarea se utilizó Context API combinado con useReducer.
+
+Se eligió esta arquitectura porque permite mantener centralizado el estado
+de autenticación sin necesidad de instalar una librería adicional. De esta
+manera, componentes como el Navbar, Login y Perfil pueden consultar y
+modificar la sesión directamente desde el estado global, evitando pasar
+información manualmente mediante props entre diferentes componentes.
+
+El uso de useReducer también permite manejar las acciones de autenticación
+de una forma organizada y predecible.
+
+## Estado global
+
+El estado de autenticación contiene información como:
+
+- Estado de autenticación del usuario.
+- Datos del usuario autenticado.
+- Estado de carga.
+- Fecha del último acceso.
+
+Las acciones implementadas son:
+
+- LOGIN
+- LOGOUT
+- UPDATE_PROFILE
+- SET_LOADING
+
+## Componentes desarrollados
+
+### AuthContext.jsx
+
+Contiene el AuthProvider, el estado global y el reducer utilizado para
+administrar la autenticación de toda la aplicación.
+
+### Login.jsx
+
+Formulario desarrollado con React-Bootstrap que permite realizar una
+autenticación simulada. Valida el correo y la contraseña antes de registrar
+la sesión.
+
+### NavigationBar.jsx
+
+La barra de navegación consulta directamente el estado global.
+
+Cuando el usuario no ha iniciado sesión muestra la opción "Iniciar Sesión".
+
+Cuando existe una sesión activa muestra el nombre del usuario, su membresía,
+el acceso al perfil y el botón "Cerrar Sesión".
+
+### Perfil.jsx
+
+Muestra la información del usuario autenticado utilizando componentes de
+React-Bootstrap como Card, Badge y ListGroup.
+
+También muestra un historial de pedidos simulado y permite cerrar la sesión.
+
+### ProtectedRoute.jsx
+
+Protege la vista de perfil para evitar que un usuario que no haya iniciado
+sesión pueda acceder directamente a esa sección.
+
+## Credenciales de prueba
+
+Correo:
+
+cliente@novatech.com
+
+Contraseña:
+
+123456
+
+## Tecnologías utilizadas
 
 - React
 - Vite
+- JavaScript
 - React Router
 - React-Bootstrap
 - Bootstrap
-- CSS
-- JavaScript
+- Context API
+- useReducer
+- Git
+- GitHub
+- Netlify
 
-Secciones del proyecto
+## Sitio publicado
 
-El sitio cuenta con las siguientes páginas:
+Pendiente de publicación en Netlify.
 
-- Inicio
-- Computadoras
-- Teléfonos
-- Accesorios
-- Ofertas
-- Nosotros
+## Integrante
 
-Componentes utilizados
+Nombre completo: Fredy Leonel Morales Albizures y Mauricio Isai Pérez Saban
 
-El proyecto utiliza diferentes componentes reutilizables, entre ellos:
+Carné: 9490-23-16408 y 9490-23-25701
 
-- Navbar
-- Footer
-- Carousel
-- Cards
-- Badges
-- Modal
-- Buttons
-- Containers
-- Rows
-- Columns
+### Secciones desarrolladas
 
-Funcionalidades
+- Configuración de Context API y useReducer.
+- AuthProvider.
+- Login.
+- Logout.
+- Perfil de usuario.
+- Navbar dinámico.
+- Protección de rutas.
+- Integración del estado global.
 
-- Navegación entre páginas mediante React Router.
-- Diseño responsivo.
-- Carrusel principal en la página de inicio.
-- Tarjetas para mostrar productos.
-- Uso de badges para destacar productos.
-- Ventana Modal para mostrar información adicional.
-- Botones interactivos.
-- Navegación hacia las diferentes categorías de productos.
-- Diseño personalizado mediante CSS.
-- Componentes reutilizables.
+## Rama utilizada
 
-Instalación
-
-Para ejecutar el proyecto localmente:
-
-git clone https://github.com/fmoralesa6-lgtm/TAREAIITIENDAENLINEA.git
-
-https://tarea2-tienda-flmorales.netlify.app/
+Tarea3
