@@ -1,62 +1,84 @@
 import { Routes, Route } from 'react-router-dom'
 
-import NavigationBar from './components/NavigationBar'
-import Footer from './components/Footer'
+import NavigationBar from './components/NavigationBar.jsx'
+import Footer from './components/Footer.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 
-import Inicio from './pages/Inicio'
-import Computadoras from './pages/Computadoras'
-import Telefonos from './pages/Telefonos'
-import Accesorios from './pages/Accesorios'
-import Ofertas from './pages/Ofertas'
-import Nosotros from './pages/Nosotros'
+import Inicio from './pages/Inicio.jsx'
+import Computadoras from './pages/Computadoras.jsx'
+import Telefonos from './pages/Telefonos.jsx'
+import Accesorios from './pages/Accesorios.jsx'
+import Ofertas from './pages/Ofertas.jsx'
+import Nosotros from './pages/Nosotros.jsx'
+import Login from './pages/Login.jsx'
+import Perfil from './pages/Perfil.jsx'
+
+import './App.css'
 
 function App() {
 
   return (
-    <>
+    <div className="d-flex flex-column min-vh-100">
 
-      {/* Barra de navegación global */}
       <NavigationBar />
 
-      {/* Contenido de las páginas */}
-      <Routes>
+      <main className="flex-grow-1">
 
-        <Route
-          path="/"
-          element={<Inicio />}
-        />
+        <Routes>
 
-        <Route
-          path="/computadoras"
-          element={<Computadoras />}
-        />
+          <Route
+            path="/"
+            element={<Inicio />}
+          />
 
-        <Route
-          path="/telefonos"
-          element={<Telefonos />}
-        />
+          <Route
+            path="/computadoras"
+            element={<Computadoras />}
+          />
 
-        <Route
-          path="/accesorios"
-          element={<Accesorios />}
-        />
+          <Route
+            path="/telefonos"
+            element={<Telefonos />}
+          />
 
-        <Route
-          path="/ofertas"
-          element={<Ofertas />}
-        />
+          <Route
+            path="/accesorios"
+            element={<Accesorios />}
+          />
 
-        <Route
-          path="/nosotros"
-          element={<Nosotros />}
-        />
+          <Route
+            path="/ofertas"
+            element={<Ofertas />}
+          />
 
-      </Routes>
+          <Route
+            path="/nosotros"
+            element={<Nosotros />}
+          />
 
-      {/* Pie de página global */}
+          <Route
+            path="/login"
+            element={<Login />}
+          />
+
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRoute>
+
+                <Perfil />
+
+              </ProtectedRoute>
+            }
+          />
+
+        </Routes>
+
+      </main>
+
       <Footer />
 
-    </>
+    </div>
   )
 }
 
