@@ -1,47 +1,43 @@
 import {
   createContext,
   useContext,
-  useReducer
+  useReducer,
+  useEffect,
+  useCallback
 } from 'react'
 
-const AuthContext = createContext()
+import {
+  api,
+  getToken,
+  setToken
+} from '../services/api.js'
+
+const AuthContext = createContext(null)
 
 const initialState = {
   isAuthenticated: false,
   user: null,
   loading: false,
-  lastLogin: null
+  initializing: true,
+  error: ''
 }
 
 function authReducer(state, action) {
-
   switch (action.type) {
-
     case 'LOGIN':
       return {
         ...state,
         isAuthenticated: true,
         user: action.payload,
-        lastLogin: action.payload.loginDate,
-        loading: false
+        loading: false,
+        initializing: false,
+        error: ''
       }
 
     case 'LOGOUT':
       return {
-        ...state,
-        isAuthenticated: false,
-        user: null,
-        loading: false,
-        lastLogin: null
-      }
-
-    case 'UPDATE_PROFILE':
-      return {
-        ...state,
-        user: {
-          ...state.user,
-          ...action.payload
-        }
+        ...initialState,
+        initializing: false
       }
 
     case 'SET_LOADING':
@@ -50,55 +46,141 @@ function authReducer(state, action) {
         loading: action.payload
       }
 
+    case 'ERROR':
+      return {
+        ...state,
+        initializing: false,
+        loading: false,
+        error: action.payload
+      }
+
     default:
       return state
   }
 }
 
-export function AuthProvider({ children }) {
+export function AuthProvider({
+  children
+}) {
+  const [state, dispatch] = useReducer(
+    authReducer,
+    initialState
+  )
 
-  const [state, dispatch] =
-    useReducer(authReducer, initialState)
-
-  const login = (userData) => {
-
-    dispatch({
-      type: 'LOGIN',
-      payload: userData
-    })
-  }
-
-  const logout = () => {
+  const logout = useCallback(() => {
+    setToken(null)
 
     dispatch({
       type: 'LOGOUT'
     })
-  }
+  }, [])
 
-  const updateProfile = (data) => {
+  const refreshProfile = useCallback(
+    async signal => {
+      const data = await api(
+        '/auth/me',
+        { signal }
+      )
 
-    dispatch({
-      type: 'UPDATE_PROFILE',
-      payload: data
-    })
-  }
+      dispatch({
+        type: 'LOGIN',
+        payload: data.user
+      })
 
-  const setLoading = (value) => {
+      return data.user
+    },
+    []
+  )
 
+  useEffect(() => {
+    const controller =
+      new AbortController()
+
+    window.addEventListener(
+      'novatech-session-expired',
+      logout
+    )
+
+    if (getToken()) {
+      refreshProfile(
+        controller.signal
+      ).catch(error => {
+        if (
+          error.name !== 'AbortError'
+        ) {
+          dispatch({
+            type: 'ERROR',
+            payload: error.message
+          })
+        }
+      })
+    } else {
+      dispatch({
+        type: 'LOGOUT'
+      })
+    }
+
+    return () => {
+      controller.abort()
+
+      window.removeEventListener(
+        'novatech-session-expired',
+        logout
+      )
+    }
+  }, [logout, refreshProfile])
+
+  async function authenticate(
+    path,
+    credentials
+  ) {
     dispatch({
       type: 'SET_LOADING',
-      payload: value
+      payload: true
     })
+
+    try {
+      const data = await api(
+        path,
+        {
+          method: 'POST',
+          body: credentials
+        }
+      )
+
+      setToken(data.token)
+
+      dispatch({
+        type: 'LOGIN',
+        payload: data.user
+      })
+    } finally {
+      dispatch({
+        type: 'SET_LOADING',
+        payload: false
+      })
+    }
   }
 
   return (
     <AuthContext.Provider
       value={{
         ...state,
-        login,
+
+        login: data =>
+          authenticate(
+            '/auth/login',
+            data
+          ),
+
+        register: data =>
+          authenticate(
+            '/auth/register',
+            data
+          ),
+
         logout,
-        updateProfile,
-        setLoading
+        refreshProfile
       }}
     >
       {children}
@@ -107,8 +189,9 @@ export function AuthProvider({ children }) {
 }
 
 export function useAuth() {
-
-  const context = useContext(AuthContext)
+  const context = useContext(
+    AuthContext
+  )
 
   if (!context) {
     throw new Error(

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+
 import {
   Container,
   Row,
@@ -10,255 +11,194 @@ import {
   Spinner
 } from 'react-bootstrap'
 
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.jsx'
+import {
+  useNavigate,
+  Link
+} from 'react-router-dom'
 
-function Login() {
+import {
+  useAuth
+} from '../context/AuthContext.jsx'
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+export default function Login({
+  registro = false
+}) {
+  const [fields, setFields] = useState({
+    name: '',
+    email: '',
+    password: ''
+  })
+
   const [error, setError] = useState('')
 
   const {
     login,
+    register,
     loading,
-    setLoading
+    error: sessionError
   } = useAuth()
 
   const navigate = useNavigate()
 
-  const handleSubmit = (event) => {
+  const change = event => {
+    setFields({
+      ...fields,
+      [event.target.name]:
+        event.target.value
+    })
+  }
 
+  async function submit(event) {
     event.preventDefault()
-
     setError('')
 
-    // Validar campos vacíos
-    if (
-      email.trim() === '' ||
-      password.trim() === ''
-    ) {
-      setError(
-        'Debe completar el correo electrónico y la contraseña.'
-      )
-
-      return
-    }
-
-    // Validación sencilla de correo
-    if (!email.includes('@')) {
-
-      setError(
-        'Ingrese un correo electrónico válido.'
-      )
-
-      return
-    }
-
-    setLoading(true)
-
-    // Autenticación simulada
-    if (
-      email === 'cliente@novatech.com' &&
-      password === '123456'
-    ) {
-
-      const userData = {
-
-        name: 'Fredy Morales',
-
-        email: email,
-
-        role: 'Cliente',
-
-        membership: 'Premium',
-
-        loginDate:
-          new Date().toLocaleString(
-            'es-GT'
-          ),
-
-        orders: [
-          {
-            id: 'NT-001',
-            product:
-              'Laptop ASUS Vivobook',
-            status: 'Entregado'
-          },
-          {
-            id: 'NT-002',
-            product:
-              'Mouse Logitech',
-            status: 'Entregado'
-          },
-          {
-            id: 'NT-003',
-            product:
-              'Audífonos Bluetooth',
-            status: 'En proceso'
-          }
-        ]
+    try {
+      if (registro) {
+        await register(fields)
+      } else {
+        await login({
+          email: fields.email,
+          password: fields.password
+        })
       }
 
-      login(userData)
-
-      setLoading(false)
-
       navigate('/perfil')
-
-    } else {
-
-      setLoading(false)
-
-      setError(
-        'Correo o contraseña incorrectos.'
-      )
+    } catch (err) {
+      setError(err.message)
     }
   }
 
   return (
-
     <Container className="py-5">
-
       <Row className="justify-content-center">
-
-        <Col
-          xs={12}
-          md={8}
-          lg={5}
-        >
-
+        <Col xs={12} md={8} lg={5}>
           <Card className="shadow border-0">
-
             <Card.Body className="p-4">
-
               <div className="text-center mb-4">
-
                 <h2>
-                  Iniciar Sesión
+                  {registro
+                    ? 'Crear cuenta'
+                    : 'Iniciar Sesión'}
                 </h2>
 
                 <p className="text-muted">
-                  Ingresa a tu cuenta de
-                  NovaTech Store
+                  Tu cuenta de NovaTech Store
                 </p>
-
               </div>
 
-              <Alert variant="info">
-
-                <strong>
-                  Credenciales de prueba
-                </strong>
-
-                <br />
-
-                Correo:
-                {' '}
-                cliente@novatech.com
-
-                <br />
-
-                Contraseña:
-                {' '}
-                123456
-
-              </Alert>
-
-              {error && (
-
+              {(error || sessionError) && (
                 <Alert variant="danger">
-
-                  {error}
-
+                  {error || sessionError}
                 </Alert>
-
               )}
 
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={submit}>
+                {registro && (
+                  <Form.Group
+                    className="mb-3"
+                    controlId="name"
+                  >
+                    <Form.Label>
+                      Nombre completo
+                    </Form.Label>
+
+                    <Form.Control
+                      name="name"
+                      autoComplete="name"
+                      required
+                      minLength={3}
+                      maxLength={100}
+                      value={fields.name}
+                      onChange={change}
+                    />
+                  </Form.Group>
+                )}
 
                 <Form.Group
                   className="mb-3"
                   controlId="email"
                 >
-
                   <Form.Label>
                     Correo electrónico
                   </Form.Label>
 
                   <Form.Control
+                    name="email"
                     type="email"
-                    placeholder="Ingrese su correo"
-                    value={email}
-                    onChange={(event) =>
-                      setEmail(
-                        event.target.value
-                      )
-                    }
+                    autoComplete="email"
+                    required
+                    maxLength={254}
+                    value={fields.email}
+                    onChange={change}
                   />
-
                 </Form.Group>
 
                 <Form.Group
                   className="mb-4"
                   controlId="password"
                 >
-
                   <Form.Label>
                     Contraseña
                   </Form.Label>
 
                   <Form.Control
+                    name="password"
                     type="password"
-                    placeholder="Ingrese su contraseña"
-                    value={password}
-                    onChange={(event) =>
-                      setPassword(
-                        event.target.value
-                      )
+                    autoComplete={
+                      registro
+                        ? 'new-password'
+                        : 'current-password'
                     }
+                    required
+                    minLength={8}
+                    maxLength={128}
+                    value={fields.password}
+                    onChange={change}
                   />
 
+                  <Form.Text>
+                    Entre 8 y 128 caracteres.
+                  </Form.Text>
                 </Form.Group>
 
                 <Button
-                  variant="primary"
                   type="submit"
-                  className="w-100"
                   disabled={loading}
+                  className="w-100"
                 >
-
                   {loading ? (
-
                     <>
                       <Spinner
                         size="sm"
-                        className="me-2"
+                        animation="border"
                       />
-
-                      Iniciando sesión...
+                      {' '}Procesando...
                     </>
-
                   ) : (
-
-                    'Iniciar Sesión'
-
+                    registro
+                      ? 'Registrarme'
+                      : 'Iniciar Sesión'
                   )}
-
                 </Button>
-
               </Form>
 
+              <p className="text-center mt-3 mb-0">
+                <Link
+                  to={
+                    registro
+                      ? '/login'
+                      : '/registro'
+                  }
+                >
+                  {registro
+                    ? 'Ya tengo una cuenta'
+                    : 'Crear una cuenta'}
+                </Link>
+              </p>
             </Card.Body>
-
           </Card>
-
         </Col>
-
       </Row>
-
     </Container>
   )
 }
-
-export default Login

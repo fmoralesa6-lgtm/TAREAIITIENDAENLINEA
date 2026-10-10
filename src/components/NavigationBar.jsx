@@ -15,8 +15,7 @@ import {
   useAuth
 } from '../context/AuthContext.jsx'
 
-function NavigationBar() {
-
+export default function NavigationBar() {
   const {
     isAuthenticated,
     user,
@@ -26,9 +25,7 @@ function NavigationBar() {
   const navigate = useNavigate()
 
   const handleLogout = () => {
-
     logout()
-
     navigate('/')
   }
 
@@ -38,9 +35,7 @@ function NavigationBar() {
       data-bs-theme="dark"
       expand="lg"
     >
-
       <Container>
-
         <Navbar.Brand
           as={NavLink}
           to="/"
@@ -55,12 +50,11 @@ function NavigationBar() {
         <Navbar.Collapse
           id="menu-principal"
         >
-
           <Nav className="ms-auto">
-
             <Nav.Link
               as={NavLink}
               to="/"
+              end
             >
               Inicio
             </Nav.Link>
@@ -101,39 +95,35 @@ function NavigationBar() {
             </Nav.Link>
 
             {!isAuthenticated ? (
-
               <Nav.Link
                 as={NavLink}
                 to="/login"
                 className="ms-lg-3"
               >
-
                 Iniciar Sesión
-
               </Nav.Link>
-
             ) : (
-
               <>
+                {user?.role === 'admin' && (
+                  <Nav.Link
+                    as={NavLink}
+                    to="/administracion"
+                  >
+                    Administrar
+                  </Nav.Link>
+                )}
 
-                <Navbar.Text
-                  className="ms-lg-3 me-lg-3"
-                >
-
-                  Hola,
-
-                  {' '}
+                <Navbar.Text className="ms-lg-3 me-lg-3">
+                  Hola,{' '}
 
                   <strong>
                     {user?.name}
                   </strong>
-
                   {' '}
 
                   <Badge bg="primary">
                     {user?.membership}
                   </Badge>
-
                 </Navbar.Text>
 
                 <Nav.Link
@@ -144,31 +134,19 @@ function NavigationBar() {
                 </Nav.Link>
 
                 <div className="d-flex align-items-center ms-lg-2">
-
                   <Button
                     variant="outline-danger"
                     size="sm"
                     onClick={handleLogout}
                   >
-
                     Cerrar Sesión
-
                   </Button>
-
                 </div>
-
               </>
-
             )}
-
           </Nav>
-
         </Navbar.Collapse>
-
       </Container>
-
     </Navbar>
   )
 }
-
-export default NavigationBar
