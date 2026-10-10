@@ -1,0 +1,354 @@
+{
+  "info": {
+    "_postman_id": "b886819f-4b90-48d2-87fc-eca2345a9f79",
+    "name": "NovaTech Store - Tarea4 - Coleccion segura",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58703757",
+    "description": "Colección de pruebas de la API REST para Desarrollo Web IV. Sin credenciales ni tokens incluidos. Configurar variables localmente en Postman antes de ejecutar. Las respuestas exitosas fueron verificadas manualmente, no vienen guardadas en esta colección."
+  },
+  "item": [
+    {
+      "name": "01 - Listar productos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/recursos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "recursos"
+          ]
+        },
+        "description": "Consulta pública de todos los productos. Respuesta observada: 200 OK."
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Registrar usuario",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Usuario Prueba\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        },
+        "description": "Registra un usuario de prueba. Utiliza un correo de prueba nuevo y una contraseña definida localmente. Respuesta observada: 201 Created."
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Iniciar sesión",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Inicia sesión como usuario de prueba. Copiar el token obtenido a la variable userToken. Respuesta observada: 200 OK."
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Consultar perfil",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{userToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        },
+        "description": "Obtiene perfil autenticado mediante Bearer {{userToken}}. Respuesta observada: 200 OK."
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Consultar producto por ID",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/recursos/{{consultaProductId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "recursos",
+            "{{consultaProductId}}"
+          ]
+        },
+        "description": "Consulta un producto existente por ID usando consultaProductId. Respuesta observada: 200 OK."
+      },
+      "response": []
+    },
+    {
+      "name": "06 - Login administrador",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        },
+        "description": "Inicia sesión con cuenta administradora. Copiar el token a adminToken. No compartir las credenciales."
+      },
+      "response": []
+    },
+    {
+      "name": "07 - Crear producto",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Laptop Prueba Postman\",\n  \"descripcion\": \"Producto creado para probar el CRUD de la Tarea 4\",\n  \"categoria\": \"computadoras\",\n  \"precio\": 3500,\n  \"precioAnterior\": 4000,\n  \"stock\": 10,\n  \"procesador\": \"Intel Core i5\",\n  \"ram\": \"8 GB\",\n  \"almacenamiento\": \"SSD 256 GB\",\n  \"etiqueta\": \"Prueba\",\n  \"destacado\": false,\n  \"oferta\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recursos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "recursos"
+          ]
+        },
+        "description": "Crea producto de prueba como administrador. Guardar el _id devuelto en testProductId para PUT y DELETE. Respuesta observada: 201 Created."
+      },
+      "response": []
+    },
+    {
+      "name": "08 - Editar producto",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Laptop Prueba Postman Actualizada\",\n  \"descripcion\": \"Producto actualizado mediante el endpoint PUT de la API REST\",\n  \"categoria\": \"computadoras\",\n  \"precio\": 3200,\n  \"precioAnterior\": 4000,\n  \"stock\": 15,\n  \"procesador\": \"Intel Core i7\",\n  \"ram\": \"16 GB\",\n  \"almacenamiento\": \"SSD 512 GB\",\n  \"etiqueta\": \"Actualizado\",\n  \"destacado\": false,\n  \"oferta\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/recursos/{{testProductId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "recursos",
+            "{{testProductId}}"
+          ]
+        },
+        "description": "Actualiza el producto de prueba usando testProductId. Respuesta observada: 200 OK."
+      },
+      "response": []
+    },
+    {
+      "name": "09 - Eliminar producto",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/recursos/{{testProductId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "recursos",
+            "{{testProductId}}"
+          ]
+        },
+        "description": "Elimina el producto de prueba referenciado por testProductId. Respuesta observada: 204 No Content. No ejecutar con el ID de un producto real."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://tareaiitiendaenlinea.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "testEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "testPassword",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminPassword",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "consultaProductId",
+      "value": "6ac923013314199fc0974b89",
+      "type": "string"
+    },
+    {
+      "key": "testProductId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
