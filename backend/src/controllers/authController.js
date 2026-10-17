@@ -23,18 +23,38 @@ export function publicUser(user) {
 }
 
 function result(user) {
+  const secret = process.env.JWT_SECRET
+  const expiresIn = process.env.JWT_EXPIRES_IN
+
+  if (!secret || !expiresIn) {
+    throw new Error(
+      'JWT_SECRET o JWT_EXPIRES_IN no está configurado.'
+    )
+  }
+
+  if (expiresIn !== '300s') {
+    throw new Error(
+      'JWT_EXPIRES_IN debe configurarse en 300s.'
+    )
+  }
+
+  const token = jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    },
+    secret,
+    {
+      subject: user.id,
+      expiresIn,
+      algorithm: 'HS256'
+    }
+  )
+
   return {
     user: publicUser(user),
-
-    token: jwt.sign(
-      {},
-      process.env.JWT_SECRET,
-      {
-        subject: user.id,
-        expiresIn: '2h',
-        algorithm: 'HS256'
-      }
-    )
+    token
   }
 }
 
@@ -50,8 +70,7 @@ function credentials(body) {
     )
   }
 
-  const email =
-    body.email.trim().toLowerCase()
+  const email = body.email.trim().toLowerCase()
 
   if (
     email.length > 254 ||
@@ -79,10 +98,7 @@ function credentials(body) {
   }
 }
 
-export async function register(
-  req,
-  res
-) {
+export async function register(req, res) {
   const {
     email,
     password
@@ -121,10 +137,7 @@ export async function register(
   res.status(201).json(result(user))
 }
 
-export async function login(
-  req,
-  res
-) {
+export async function login(req, res) {
   const {
     email,
     password
@@ -151,14 +164,11 @@ export async function login(
 
   await user.save()
 
-  res.json(result(user))
+  res.status(200).json(result(user))
 }
 
-export async function me(
-  req,
-  res
-) {
-  res.json({
+export async function me(req, res) {
+  res.status(200).json({
     user: publicUser(req.user)
   })
 }

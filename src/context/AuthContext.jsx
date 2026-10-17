@@ -1,3 +1,4 @@
+
 import {
   createContext,
   useContext,
@@ -19,7 +20,28 @@ const initialState = {
   user: null,
   loading: false,
   initializing: true,
-  error: ''
+  error: '',
+  sessionExpired: false
+}
+
+function getTokenExpiration(token) {
+  try {
+    const encodedPayload = token.split('.')[1]
+
+    const normalizedPayload = encodedPayload
+      .replace(/-/g, '+')
+      .replace(/_/g, '/')
+
+    const payload = JSON.parse(
+      atob(normalizedPayload)
+    )
+
+    return typeof payload.exp === 'number'
+      ? payload.exp * 1000
+      : 0
+  } catch {
+    return 0
+  }
 }
 
 function authReducer(state, action) {
@@ -31,13 +53,23 @@ function authReducer(state, action) {
         user: action.payload,
         loading: false,
         initializing: false,
-        error: ''
+        error: '',
+        sessionExpired: false
       }
 
     case 'LOGOUT':
       return {
         ...initialState,
-        initializing: false
+        initializing: false,
+        sessionExpired: false
+      }
+
+    case 'SESSION_EXPIRED':
+      return {
+        ...initialState,
+        initializing: false,
+        sessionExpired: true,
+        error: 'Su sesión ya no es válida o ha caducado.'
       }
 
     case 'SET_LOADING':
@@ -59,9 +91,7 @@ function authReducer(state, action) {
   }
 }
 
-export function AuthProvider({
-  children
-}) {
+export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(
     authReducer,
     initialState
@@ -72,6 +102,14 @@ export function AuthProvider({
 
     dispatch({
       type: 'LOGOUT'
+    })
+  }, [])
+
+  const expireSession = useCallback(() => {
+    setToken(null)
+
+    dispatch({
+      type: 'SESSION_EXPIRED'
     })
   }, [])
 
@@ -93,27 +131,30 @@ export function AuthProvider({
   )
 
   useEffect(() => {
-    const controller =
-      new AbortController()
+    const controller = new AbortController()
 
     window.addEventListener(
       'novatech-session-expired',
-      logout
+      expireSession
     )
 
-    if (getToken()) {
-      refreshProfile(
-        controller.signal
-      ).catch(error => {
-        if (
-          error.name !== 'AbortError'
-        ) {
-          dispatch({
-            type: 'ERROR',
-            payload: error.message
-          })
-        }
-      })
+    const token = getToken()
+
+    if (token) {
+      const expiresAt = getTokenExpiration(token)
+
+      if (!expiresAt || expiresAt <= Date.now()) {
+        expireSession()
+      } else {
+        refreshProfile(controller.signal).catch(error => {
+          if (error.name !== 'AbortError') {
+            dispatch({
+              type: 'ERROR',
+              payload: error.message
+            })
+          }
+        })
+      }
     } else {
       dispatch({
         type: 'LOGOUT'
@@ -125,28 +166,51 @@ export function AuthProvider({
 
       window.removeEventListener(
         'novatech-session-expired',
-        logout
+        expireSession
       )
     }
-  }, [logout, refreshProfile])
+  }, [expireSession, refreshProfile])
 
-  async function authenticate(
-    path,
-    credentials
-  ) {
+  useEffect(() => {
+    const token = getToken()
+
+    if (!token || !state.isAuthenticated) {
+      return
+    }
+
+    const expiresAt = getTokenExpiration(token)
+    const remaining = expiresAt - Date.now()
+
+    if (remaining <= 0) {
+      expireSession()
+      return
+    }
+
+    const timer = window.setTimeout(
+      expireSession,
+      remaining
+    )
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [
+    state.isAuthenticated,
+    state.user,
+    expireSession
+  ])
+
+  async function authenticate(path, credentials) {
     dispatch({
       type: 'SET_LOADING',
       payload: true
     })
 
     try {
-      const data = await api(
-        path,
-        {
-          method: 'POST',
-          body: credentials
-        }
-      )
+      const data = await api(path, {
+        method: 'POST',
+        body: credentials
+      })
 
       setToken(data.token)
 
@@ -154,6 +218,8 @@ export function AuthProvider({
         type: 'LOGIN',
         payload: data.user
       })
+
+      return data.user
     } finally {
       dispatch({
         type: 'SET_LOADING',
@@ -168,19 +234,14 @@ export function AuthProvider({
         ...state,
 
         login: data =>
-          authenticate(
-            '/auth/login',
-            data
-          ),
+          authenticate('/auth/login', data),
 
         register: data =>
-          authenticate(
-            '/auth/register',
-            data
-          ),
+          authenticate('/auth/register', data),
 
         logout,
-        refreshProfile
+        refreshProfile,
+        expireSession
       }}
     >
       {children}
@@ -189,9 +250,7 @@ export function AuthProvider({
 }
 
 export function useAuth() {
-  const context = useContext(
-    AuthContext
-  )
+  const context = useContext(AuthContext)
 
   if (!context) {
     throw new Error(

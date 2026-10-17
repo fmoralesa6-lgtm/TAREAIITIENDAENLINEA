@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 
 import {
@@ -35,38 +36,62 @@ export default function Login({
     login,
     register,
     loading,
-    error: sessionError
+    error: sessionError,
+    sessionExpired
   } = useAuth()
 
   const navigate = useNavigate()
 
   const change = event => {
-    setFields({
-      ...fields,
-      [event.target.name]:
-        event.target.value
-    })
+    const { name, value } = event.target
+
+    setFields(previous => ({
+      ...previous,
+      [name]: value
+    }))
+
+    if (error) {
+      setError('')
+    }
   }
 
   async function submit(event) {
     event.preventDefault()
+
+    if (loading) {
+      return
+    }
+
     setError('')
 
     try {
       if (registro) {
-        await register(fields)
+        await register({
+          name: fields.name.trim(),
+          email: fields.email.trim(),
+          password: fields.password
+        })
       } else {
         await login({
-          email: fields.email,
+          email: fields.email.trim(),
           password: fields.password
         })
       }
 
-      navigate('/perfil')
+      navigate('/perfil', {
+        replace: true
+      })
     } catch (err) {
-      setError(err.message)
+      setError(
+        err.message ||
+        'Ocurrió un error. Intenta nuevamente.'
+      )
     }
   }
+
+  const showError =
+    error ||
+    (!sessionExpired ? sessionError : '')
 
   return (
     <Container className="py-5">
@@ -86,9 +111,13 @@ export default function Login({
                 </p>
               </div>
 
-              {(error || sessionError) && (
-                <Alert variant="danger">
-                  {error || sessionError}
+              {showError && (
+                <Alert
+                  variant="danger"
+                  role="alert"
+                  className="mb-4"
+                >
+                  {showError}
                 </Alert>
               )}
 
@@ -104,12 +133,15 @@ export default function Login({
 
                     <Form.Control
                       name="name"
+                      type="text"
                       autoComplete="name"
+                      placeholder="Ingrese su nombre completo"
                       required
                       minLength={3}
                       maxLength={100}
                       value={fields.name}
                       onChange={change}
+                      disabled={loading}
                     />
                   </Form.Group>
                 )}
@@ -126,10 +158,12 @@ export default function Login({
                     name="email"
                     type="email"
                     autoComplete="email"
+                    placeholder="Ingrese su correo electrónico"
                     required
                     maxLength={254}
                     value={fields.email}
                     onChange={change}
+                    disabled={loading}
                   />
                 </Form.Group>
 
@@ -149,14 +183,16 @@ export default function Login({
                         ? 'new-password'
                         : 'current-password'
                     }
+                    placeholder="Ingrese su contraseña"
                     required
                     minLength={8}
                     maxLength={128}
                     value={fields.password}
                     onChange={change}
+                    disabled={loading}
                   />
 
-                  <Form.Text>
+                  <Form.Text className="text-muted">
                     Entre 8 y 128 caracteres.
                   </Form.Text>
                 </Form.Group>
@@ -169,10 +205,14 @@ export default function Login({
                   {loading ? (
                     <>
                       <Spinner
+                        as="span"
                         size="sm"
                         animation="border"
+                        role="status"
+                        aria-hidden="true"
+                        className="me-2"
                       />
-                      {' '}Procesando...
+                      Procesando...
                     </>
                   ) : (
                     registro
@@ -189,6 +229,7 @@ export default function Login({
                       ? '/login'
                       : '/registro'
                   }
+                  onClick={() => setError('')}
                 >
                   {registro
                     ? 'Ya tengo una cuenta'

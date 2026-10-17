@@ -1,0 +1,481 @@
+{
+  "info": {
+    "_postman_id": "b886819f-4b90-48d2-87fc-eca2345a9f79",
+    "name": "NovaTech Store - Tarea5 - Seguridad JWT (corregida)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58703757"
+  },
+  "item": [
+    {
+      "name": "01 - Listar productos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/recursos",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "recursos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Registrar usuario",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Usuario Prueba\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/auth/register",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Iniciar sesión",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/auth/login",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Consultar perfil",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/auth/me",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Consultar producto por ID",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/recursos/6ac923013314199fc0974b89",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "recursos",
+            "6ac923013314199fc0974b89"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "06 - Login administrador",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/auth/login",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 - Crear producto",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n  \"nombre\": \"Laptop Prueba Postman\",\r\n  \"descripcion\": \"Producto creado para probar el CRUD de la Tarea 4\",\r\n  \"categoria\": \"computadoras\",\r\n  \"precio\": 3500,\r\n  \"precioAnterior\": 4000,\r\n  \"stock\": 10,\r\n  \"procesador\": \"Intel Core i5\",\r\n  \"ram\": \"8 GB\",\r\n  \"almacenamiento\": \"SSD 256 GB\",\r\n  \"etiqueta\": \"Prueba\",\r\n  \"destacado\": false,\r\n  \"oferta\": false\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/recursos",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "recursos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "08 - Editar producto",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n  \"nombre\": \"Laptop Prueba Postman Actualizada\",\r\n  \"descripcion\": \"Producto actualizado mediante el endpoint PUT de la API REST\",\r\n  \"categoria\": \"computadoras\",\r\n  \"precio\": 3200,\r\n  \"precioAnterior\": 4000,\r\n  \"stock\": 15,\r\n  \"procesador\": \"Intel Core i7\",\r\n  \"ram\": \"16 GB\",\r\n  \"almacenamiento\": \"SSD 512 GB\",\r\n  \"etiqueta\": \"Actualizado\",\r\n  \"destacado\": false,\r\n  \"oferta\": false\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/recursos/6ac9d56dedcdb397c8aa1da8",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "recursos",
+            "6ac9d56dedcdb397c8aa1da8"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "09 - Eliminar producto",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "https://tareaiitiendaenlinea.onrender.com/api/recursos/6ac9d56dedcdb397c8aa1da8",
+          "protocol": "https",
+          "host": [
+            "tareaiitiendaenlinea",
+            "onrender",
+            "com"
+          ],
+          "path": [
+            "api",
+            "recursos",
+            "6ac9d56dedcdb397c8aa1da8"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10 - Login JWT - Obtener Token",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:4000/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Login devuelve 200', () => pm.response.to.have.status(200));",
+              "const data = pm.response.json();",
+              "pm.test('Devuelve token JWT', () => pm.expect(data.token).to.be.a('string').and.not.empty);",
+              "if (pm.response.code === 200 && data.token) pm.collectionVariables.set('jwt', data.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Perfil Protegido - Token Valido",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:4000/api/auth/me",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('JWT valido devuelve 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Perfil Protegido - Sin Token",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:4000/api/auth/me",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Sin token devuelve 401', () => pm.response.to.have.status(401));",
+              "pm.test('Error unauthorized', () => pm.expect(pm.response.json().error).to.eql('unauthorized'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 - Perfil Protegido - Token Expirado",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:4000/api/auth/me",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "4000",
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Token expirado devuelve 401', () => pm.response.to.have.status(401));",
+              "pm.test('Error token_expired', () => pm.expect(pm.response.json().error).to.eql('token_expired'));"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "jwt",
+      "value": ""
+    },
+    {
+      "key": "adminEmail",
+      "value": ""
+    },
+    {
+      "key": "adminPassword",
+      "value": ""
+    },
+    {
+      "key": "testEmail",
+      "value": "prueba.tarea5@example.com"
+    },
+    {
+      "key": "testPassword",
+      "value": ""
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+
 const base = (
   import.meta.env.VITE_API_URL ||
   'http://localhost:4000/api'
@@ -11,10 +12,7 @@ export const getToken = () => {
 
 export const setToken = token => {
   if (token) {
-    sessionStorage.setItem(
-      tokenKey,
-      token
-    )
+    sessionStorage.setItem(tokenKey, token)
   } else {
     sessionStorage.removeItem(tokenKey)
   }
@@ -24,54 +22,38 @@ export async function api(
   path,
   {
     body,
+    headers: customHeaders,
     ...options
   } = {}
 ) {
   const token = getToken()
 
+  const headers = new Headers(customHeaders || {})
+
+  if (body !== undefined) {
+    headers.set('Content-Type', 'application/json')
+  }
+
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
+
   let response
 
   try {
-    response = await fetch(
-      `${base}${path}`,
-      {
-        ...options,
-
-        signal:
-          options.signal ||
-          AbortSignal.timeout(15000),
-
-        headers: {
-          ...(
-            body !== undefined
-              ? {
-                  'Content-Type':
-                    'application/json'
-                }
-              : {}
-          ),
-
-          ...(
-            token
-              ? {
-                  Authorization:
-                    `Bearer ${token}`
-                }
-              : {}
-          )
-        },
-
-        ...(
-          body !== undefined
-            ? {
-                body: JSON.stringify(body)
-              }
-            : {}
-        )
-      }
-    )
+    response = await fetch(`${base}${path}`, {
+      ...options,
+      signal: options.signal || AbortSignal.timeout(15000),
+      headers,
+      ...(body !== undefined
+        ? { body: JSON.stringify(body) }
+        : {})
+    })
   } catch (error) {
-    if (error.name === 'AbortError') {
+    if (
+      error.name === 'AbortError' ||
+      error.name === 'TimeoutError'
+    ) {
       throw error
     }
 
@@ -84,29 +66,30 @@ export async function api(
     return null
   }
 
-  const data = await response
-    .json()
-    .catch(() => ({
-      message:
-        'Respuesta no válida del servidor.'
-    }))
+  const data = await response.json().catch(() => ({
+    message: 'Respuesta no válida del servidor.'
+  }))
 
   if (!response.ok) {
     const error = new Error(
-      data.message ||
-      'No se pudo completar la solicitud.'
+      data.message || 'No se pudo completar la solicitud.'
     )
 
     error.status = response.status
+    error.code = data.error
 
     if (
       response.status === 401 &&
-      token
+      token &&
+      (
+        data.error === 'token_expired' ||
+        data.error === 'invalid_token'
+      )
     ) {
+      setToken(null)
+
       window.dispatchEvent(
-        new Event(
-          'novatech-session-expired'
-        )
+        new Event('novatech-session-expired')
       )
     }
 
@@ -117,11 +100,8 @@ export async function api(
 }
 
 export const money = value => {
-  return new Intl.NumberFormat(
-    'es-GT',
-    {
-      style: 'currency',
-      currency: 'GTQ'
-    }
-  ).format(value)
+  return new Intl.NumberFormat('es-GT', {
+    style: 'currency',
+    currency: 'GTQ'
+  }).format(value)
 }

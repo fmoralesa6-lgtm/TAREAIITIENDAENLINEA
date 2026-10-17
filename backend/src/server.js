@@ -14,42 +14,49 @@ import mongoose from 'mongoose'
 try {
   validateEnv()
 
+  console.log('Verificando variables de entorno...')
+
+  console.log('Intentando conectar con MongoDB Atlas...')
+
   await connectDB()
 
-  const port = Number(
-    process.env.PORT || 4000
-  )
+  console.log('Conexión a MongoDB establecida correctamente.')
 
-  const server = app.listen(
-    port,
-    () => {
-      console.log(
-        `API disponible en http://localhost:${port}/api`
-      )
-    }
-  )
+  const port = Number(process.env.PORT || 4000)
 
-  server.on('error', () => {
-    console.error(
-      'No se pudo abrir el puerto. Revisa PORT.'
-    )
+  const server = app.listen(port, () => {
+    console.log('====================================')
+    console.log('NOVATECH STORE - BACKEND')
+    console.log('====================================')
+    console.log(`API disponible en http://localhost:${port}/api`)
+    console.log('MongoDB: Conectado')
+    console.log('JWT: Configurado')
+    console.log('====================================')
+  })
 
+  server.on('error', (error) => {
+    console.error('Error al iniciar el servidor:', error.message)
     process.exit(1)
   })
 
   const close = () => {
     server.close(async () => {
       await mongoose.disconnect()
+      console.log('Servidor y MongoDB desconectados.')
       process.exit(0)
     })
   }
 
   process.on('SIGINT', close)
   process.on('SIGTERM', close)
-} catch {
-  console.error(
-    'No se inició la API. Revisa backend/.env, las credenciales, la IP autorizada y la conexión a Atlas.'
-  )
+
+} catch (error) {
+  console.error('====================================')
+  console.error('ERROR AL INICIAR NOVATECH STORE')
+  console.error('====================================')
+  console.error('Nombre del error:', error.name)
+  console.error('Descripción:', error.message)
+  console.error('====================================')
 
   process.exit(1)
 }
