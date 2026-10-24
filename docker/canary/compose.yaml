@@ -1,0 +1,32 @@
+
+name: novatech-canary
+
+services:
+  estable:
+    image: novatech-frontend:v1
+    restart: unless-stopped
+    networks:
+      - canary-net
+
+  nueva:
+    image: novatech-frontend:v2
+    restart: unless-stopped
+    networks:
+      - canary-net
+
+  gateway:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8087:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - estable
+      - nueva
+    networks:
+      - canary-net
+
+networks:
+  canary-net:
+    driver: bridge

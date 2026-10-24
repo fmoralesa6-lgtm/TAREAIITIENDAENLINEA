@@ -1,0 +1,15 @@
+
+node_modules
+backend
+dist
+.git
+.gitignore
+.env
+.env.*
+**/.env
+**/.env.*
+*.log
+postman
+README.md
+coverage
+.vscode

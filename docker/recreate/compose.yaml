@@ -1,0 +1,10 @@
+
+name: novatech-recreate
+
+services:
+  frontend:
+    image: novatech-frontend:${APP_VERSION:-v1}
+    restart: unless-stopped
+
+    ports:
+      - "8085:80"
